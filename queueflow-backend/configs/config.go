@@ -8,6 +8,12 @@ import (
 type Config struct {
 	RedisURL    string
 	WorkerCount int
+
+	DBHost     string
+	DBPort     string
+	DBUser     string
+	DBPassword string
+	DBName     string
 }
 
 func Load() Config {
@@ -19,9 +25,20 @@ func Load() Config {
 
 	redisURL := getEnv("REDIS_URL", "localhost:6379")
 
+	dbHost := getEnv("DB_HOST", "localhost")
+	dbPort := getEnv("DB_PORT", "5432")
+	dbUser := getEnv("DB_USER", "postgres")
+	dbPassword := getEnv("DB_PASSWORD", "password")
+	dbName := getEnv("DB_NAME", "queueflow")
+
 	return Config{
 		RedisURL:    redisURL,
 		WorkerCount: workers,
+		DBHost:      dbHost,
+		DBPort:      dbPort,
+		DBUser:      dbUser,
+		DBPassword:  dbPassword,
+		DBName:      dbName,
 	}
 }
 

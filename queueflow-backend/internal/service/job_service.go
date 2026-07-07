@@ -1,8 +1,6 @@
 package service
 
 import (
-	"github.com/google/uuid"
-
 	"queueflow/internal/models"
 	"queueflow/internal/queue"
 )
@@ -15,14 +13,7 @@ func NewJobService(q queue.Queue) *JobService {
 	return &JobService{queue: q}
 }
 
-func (s *JobService) CreateJob(jobType string, payload string) (models.Job, error) {
-
-	job := models.Job{
-		ID:      uuid.NewString(),
-		Type:    jobType,
-		Payload: payload,
-		Status:  "queued",
-	}
+func (s *JobService) CreateJob(job models.Job) (models.Job, error) {
 
 	err := s.queue.Push(job)
 	if err != nil {

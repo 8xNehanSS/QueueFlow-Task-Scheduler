@@ -1,23 +1,27 @@
 package worker
 
 import (
+	"database/sql"
 	"log"
 	"sync"
 
 	"queueflow/internal/queue"
+	"queueflow/internal/repository"
 )
 
 type WorkerPool struct {
 	queue   queue.Queue
 	workers int
 	manager *Manager
+	db      *sql.DB
 }
 
-func NewWorkerPool(q queue.Queue, workers int, manager *Manager) *WorkerPool {
+func NewWorkerPool(q queue.Queue, workers int, manager *Manager, db *sql.DB) *WorkerPool {
 	return &WorkerPool{
 		queue:   q,
 		workers: workers,
 		manager: manager,
+		db:      db,
 	}
 }
 
@@ -32,7 +36,8 @@ func (wp *WorkerPool) Start() {
 		go func(id int) {
 			defer wg.Done()
 
-			w := NewWorker(wp.queue, wp.manager)
+			repo := repository.NewJobRepository(wp.db)
+			w := NewWorker(wp.queue, wp.manager, repo)
 
 			log.Printf("[Worker %d] Started", id)
 

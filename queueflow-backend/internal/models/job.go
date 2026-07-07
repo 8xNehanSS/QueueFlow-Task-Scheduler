@@ -1,11 +1,16 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type Job struct {
-	ID        string
-	Type      string
-	Payload   string
-	Status    string
-	CreatedAt time.Time
+	ID        uuid.UUID `json:"id"`
+	Type      string    `json:"type"`
+	Payload   string    `json:"payload"`
+	Status    string    `json:"status"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
