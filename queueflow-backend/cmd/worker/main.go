@@ -2,17 +2,24 @@ package main
 
 import (
 	"log"
+	config "queueflow/configs"
+	"queueflow/internal/constants"
+	"queueflow/internal/jobs/backup"
+	"queueflow/internal/jobs/email"
 	"queueflow/internal/queue"
 	"queueflow/internal/worker"
 )
 
 func main() {
-	q := queue.NewRedisQueue()
-	w := worker.NewWorker(q)
 
-	log.Println("Worker started...")
+	cfg := config.Load()
+	q := queue.NewRedisQueue(cfg.RedisURL)
 
-	for {
-		w.Process()
-	}
+	manager := worker.NewManager()
+	manager.Register(constants.JobBackup, backup.NewJobHandler())
+	manager.Register(constants.JobEmail, email.NewJobHandler())
+
+	log.Println("QueueFlow Worker")
+	workerPool := worker.NewWorkerPool(q, cfg.WorkerCount, manager)
+	workerPool.Start()
 }

@@ -3,13 +3,16 @@ package main
 import (
 	"log"
 	"net/http"
+	config "queueflow/configs"
 	"queueflow/internal/api/routes"
 	"queueflow/internal/queue"
 	"queueflow/internal/service"
 )
 
 func main() {
-	q := queue.NewRedisQueue()
+
+	cfg := config.Load()
+	q := queue.NewRedisQueue(cfg.RedisURL)
 
 	jobService := service.NewJobService(q)
 

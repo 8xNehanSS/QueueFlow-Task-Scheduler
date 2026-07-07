@@ -15,9 +15,9 @@ type RedisQueue struct {
 	ctx    context.Context
 }
 
-func NewRedisQueue() *RedisQueue {
+func NewRedisQueue(redisURL string) *RedisQueue {
 	rdb := redis.NewClient(&redis.Options{
-		Addr: "localhost:6379",
+		Addr: redisURL,
 	})
 
 	return &RedisQueue{

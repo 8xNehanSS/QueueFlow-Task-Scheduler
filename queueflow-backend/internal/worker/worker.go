@@ -2,34 +2,41 @@ package worker
 
 import (
 	"log"
-
+	"queueflow/internal/constants"
 	"queueflow/internal/queue"
 )
 
 type Worker struct {
-	queue queue.Queue
+	queue   queue.Queue
+	manager *Manager
 }
 
-func NewWorker(q queue.Queue) *Worker {
-	return &Worker{queue: q}
+func NewWorker(q queue.Queue, m *Manager) *Worker {
+	return &Worker{
+		queue:   q,
+		manager: m,
+	}
 }
 
 func (w *Worker) Process() {
+
 	job, err := w.queue.Pop()
+
 	if err != nil {
 		log.Println("queue error:", err)
 		return
 	}
 
-	log.Println("Processing job:", job.ID, job.Type)
+	jobType := job.Type
 
-	switch job.Type {
-	case "email":
-		log.Println("Sending email to:", job.Payload)
+	handler, exists := w.manager.Get(constants.JobType(jobType))
 
-	case "image":
-		log.Println("Processing image:", job.Payload)
+	if !exists {
+		log.Println("No handler found for:", job.Type)
+		return
 	}
+
+	handler.Handle(job)
 
 	log.Println("Job completed:", job.ID)
 }
